@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
+import { Request, Response, NextFunction } from "express";
+import Joi from "joi";
 
 const deliveryPriceSchema = Joi.object({
   venue_slug: Joi.string().required(),
@@ -8,7 +8,11 @@ const deliveryPriceSchema = Joi.object({
   user_lon: Joi.number().required(),
 });
 
-const validateRequest = (req: Request, res: Response, next: NextFunction): void => {
+const validateRequest = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const { error } = deliveryPriceSchema.validate(req.query);
 
   if (error) {

@@ -1,18 +1,21 @@
 export const calculateDistance = (
-    loc1: { lat: number; lon: number },
-    loc2: { lat: number; lon: number }
-  ): number => {
-    const R = 6371e3; // Earth radius in meters
-    const φ1 = (loc1.lat * Math.PI) / 180;
-    const φ2 = (loc2.lat * Math.PI) / 180;
-    const Δφ = ((loc2.lat - loc1.lat) * Math.PI) / 180;
-    const Δλ = ((loc2.lon - loc1.lon) * Math.PI) / 180;
-  
-    const a =
-      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  
-    return R * c; // Distance in meters
-  };
-  
+  location1: { lat: number; lon: number },
+  location2: { lat: number; lon: number }
+): number => {
+  const earthRadius = 6371e3; // Earth radius in meters
+  const latitude1InRadians = (location1.lat * Math.PI) / 180;
+  const latitude2InRadians = (location2.lat * Math.PI) / 180;
+  const latitudeDifference = ((location2.lat - location1.lat) * Math.PI) / 180;
+  const longitudeDifference = ((location2.lon - location1.lon) * Math.PI) / 180;
+
+  const haversineFormula =
+    Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) +
+    Math.cos(latitude1InRadians) *
+      Math.cos(latitude2InRadians) *
+      Math.sin(longitudeDifference / 2) *
+      Math.sin(longitudeDifference / 2);
+
+  const centralAngle = 2 * Math.atan2(Math.sqrt(haversineFormula), Math.sqrt(1 - haversineFormula));
+
+  return earthRadius * centralAngle; // Distance in meters
+};
