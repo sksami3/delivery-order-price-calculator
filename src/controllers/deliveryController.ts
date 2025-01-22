@@ -25,7 +25,7 @@ export const calculateDeliveryPrice = async (req: Request, res: Response): Promi
         details: error.message,
       });
     } else {
-      res.status(500).json({ error: 'Internal Server Error', details: 'Unknown error' });
+      res.status(500).json({ error: 'Internal Server Error', details: 'Error' });
     }
   }
 };

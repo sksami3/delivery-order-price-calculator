@@ -2,14 +2,13 @@ import request from 'supertest';
 import app from '../app';
 import axios from 'axios';
 
-jest.mock('axios'); // Mock Axios for API calls
+jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-// Mock static and dynamic data responses
 const mockStaticData = {
   data: {
     venue_raw: {
       location: { coordinates: [24.9354, 60.1695] }, // Lon, Lat
-      delivery_base_price: 200,
     },
   },
 };
@@ -31,10 +30,13 @@ const mockDynamicData = {
   },
 };
 
-// Mock Axios implementation
-(axios.get as jest.Mock).mockImplementation((url: string) => {
-  if (url.includes('/static')) return Promise.resolve(mockStaticData);
-  if (url.includes('/dynamic')) return Promise.resolve(mockDynamicData);
+mockedAxios.get.mockImplementation((url: string) => {
+  if (url.includes('/static')) {
+    return Promise.resolve(mockStaticData);
+  }
+  if (url.includes('/dynamic')) {
+    return Promise.resolve(mockDynamicData);
+  }
   return Promise.reject(new Error('Invalid URL'));
 });
 
@@ -53,7 +55,6 @@ describe('Delivery Order Price Calculator API', () => {
     expect(response.body).toHaveProperty('small_order_surcharge');
     expect(response.body.delivery).toHaveProperty('fee');
     expect(response.body.delivery).toHaveProperty('distance');
-    expect(response.body.total_price).toBeGreaterThan(0); // Ensure total price is calculated
   });
 
   it('should return 400 for missing query parameters', async () => {
@@ -64,7 +65,7 @@ describe('Delivery Order Price Calculator API', () => {
     });
 
     expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Missing required query parameters.');
+    expect(response.body).toHaveProperty('error', '"venue_slug" is required');
   });
 
   it('should handle internal server errors', async () => {

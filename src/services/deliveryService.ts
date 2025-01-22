@@ -1,5 +1,6 @@
 import axios from "axios";
 import { calculateDistance } from "../utils/distance";
+import { calculateDeliveryFee } from "../utils/deliveryFee";
 import { DynamicDataResponse, StaticDataResponse, VenueLocation } from "../types/interface";
 
 export const calculatePrice = async (
@@ -26,23 +27,14 @@ export const calculatePrice = async (
       lon: staticData.data.venue_raw.location.coordinates[0],
     };
 
-    const deliveryDistance = Math.round(calculateDistance(venueLocation, { lat: userLat, lon: userLon }));
+    const deliveryDistance = Math.round(
+      calculateDistance(venueLocation, { lat: userLat, lon: userLon })
+    );
 
-    const { base_price, distance_ranges } = dynamicData.data.venue_raw.delivery_specs.delivery_pricing;
+    const deliveryPricing = dynamicData.data.venue_raw.delivery_specs.delivery_pricing;
 
-    // Calculate delivery fee based on the distance range
-    let deliveryFee = base_price;
-    for (const range of distance_ranges) {
-      if (
-        deliveryDistance >= range.min &&
-        (range.max === 0 || deliveryDistance <= range.max)
-      ) {
-        deliveryFee += range.a + range.b * deliveryDistance;
-        break;
-      }
-    }
+    const deliveryFee = calculateDeliveryFee(deliveryDistance, deliveryPricing);
 
-    // Calculate small order surcharge
     const orderMinimum = dynamicData.data.venue_raw.delivery_specs.order_minimum_no_surcharge;
     const smallOrderSurcharge = cartValue < orderMinimum ? 500 : 0;
 

@@ -20,7 +20,7 @@ const validateRequest = (
     return; // Stop further execution if validation fails
   }
 
-  next(); // Pass control to the next middleware if validation succeeds
+  next(); 
 };
 
 export default validateRequest;

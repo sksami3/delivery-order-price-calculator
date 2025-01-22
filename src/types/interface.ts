@@ -15,7 +15,7 @@ export interface VenueLocation {
   export interface DynamicDataResponse {
     venue_raw: {
       delivery_specs: {
-        order_minimum_no_surcharge: number; // Minimum cart value to avoid surcharge
+        order_minimum_no_surcharge: number; 
         delivery_pricing: {
           base_price: number; 
           distance_ranges: Array<{
